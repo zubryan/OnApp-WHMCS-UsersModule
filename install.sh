@@ -13,7 +13,15 @@ do
 	regex="^[2-3]\.[0-5]\.[0-5]$"
 	if [[ "${OnAppVersion}" =~ $regex ]]
 		then
-			i=false
+			if git ls-remote --heads https://github.com/OnApp/OnApp-WHMCS-UsersModule.git | grep refs/heads/${OnAppVersion} &> /dev/null
+				then
+					i=false
+				else
+					echo
+					echo 'ERROR: There is no code for specified OnApp version.'
+					echo 'Please, contact support.'
+					exit 1
+			fi
 		else
 			echo "Entered value [ ${OnAppVersion} ] seems to be not valid version number"
 	fi
@@ -76,4 +84,4 @@ rm -rf ${tmpDir}
 rm ${installator}
 
 echo
-echo 'Installation finished'
+echo 'Installation finished.'
