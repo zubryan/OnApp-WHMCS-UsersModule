@@ -1,7 +1,7 @@
-$( document ).ready( function() {
+$( document ).ready( function () {
 	$( '#stat_data div' ).hide();
 
-	$( '#stat-nav a' ).click( function() {
+	$( '#stat-nav a' ).click( function () {
 		$( '#stat-nav a' ).removeClass( 'stat-nav-bold' );
 		$( this ).addClass( 'stat-nav-bold' );
 		$( '#stat_data div' ).hide();
@@ -36,7 +36,7 @@ $( document ).ready( function() {
 	$( 'input#end' ).val( end );
 
 	var PGN = false;
-	$( 'input#get-stat' ).bind( 'click', function() {
+	$( 'input#get-stat' ).bind( 'click', function () {
 		$( 'span#loading' ).css( 'visibility', 'visible' );
 		if( PGN ) {
 			PGN = false;
@@ -54,7 +54,7 @@ $( document ).ready( function() {
 				start: $( 'input#start' ).val() + ' ' + $( 'select#start-time' ).val() + ':00:00',
 				end: $( 'input#end' ).val() + ' ' + $( 'select#end-time' ).val() + ':00:00',
 				page: page,
-				tz_offset: function() {
+				tz_offset: function () {
 					if( $( '#use-tz input' ).attr( 'checked' ) ) {
 						var myDate = new Date();
 						offset = myDate.getTimezoneOffset();
@@ -66,7 +66,7 @@ $( document ).ready( function() {
 				},
 				id: PID
 			},
-			success: function( data ) {
+			success: function ( data ) {
 				data = jQuery.evalJSON( data );
 				processData( data );
 				processPGN( data );
@@ -123,14 +123,14 @@ $( document ).ready( function() {
 		$( document ).click();
 	} );
 	$( document ).click( function () {
-		if( !selenter ) {
+		if( ! selenter ) {
 			$( '.sel_options' ).hide();
 			$( '.sel_imul' ).removeClass( 'act' );
 		}
 	} );
 
-	$( "#end" ).datepicker( { dateFormat:'yy-mm-dd' } );
-	$( "#start" ).datepicker( { dateFormat:'yy-mm-dd' } );
+	$( "#end" ).datepicker( { dateFormat: 'yy-mm-dd' } );
+	$( "#start" ).datepicker( { dateFormat: 'yy-mm-dd' } );
 
 	reselect( '#start-time', 'sec overf' );
 	reselect( '#end-time', 'sec overf' );
@@ -285,7 +285,7 @@ function processPGN( data ) {
 	}
 
 	var nav = '';
-	for( i = 1; i <= pages; ++i ) {
+	for( i = 1; i <= pages; ++ i ) {
 		nav += '<option value="' + i + '">' + i + '</option>';
 	}
 
@@ -318,7 +318,7 @@ function processPGN( data ) {
 	$( '#stat-pages' ).show();
 
 	// align nav divs
-	if( !$( 'div.taleft' ).attr( 'fixed' ) ) {
+	if( ! $( 'div.taleft' ).attr( 'fixed' ) ) {
 		$( 'div.taleft' ).width( $( 'div.taleft' ).width() + 20 );
 		$( 'div.taright' ).width( $( 'div.taright' ).width() + 5 );
 		var w = $( '#stat-pages' ).width() - $( 'div.taleft' ).width() - $( 'div.taright' ).width();
@@ -334,7 +334,7 @@ function processPGN( data ) {
 		}
 	}, 2 );
 
-	$( 'div.tacenter a' ).live( 'click', function() {
+	$( 'div.tacenter a' ).live( 'click', function () {
 		var p = $( this ).attr( 'href' );
 		$( '#stat-pages div.sel_option[value="' + p + '"]' ).click();
 
@@ -345,8 +345,8 @@ function processPGN( data ) {
 function number_format( number, decimals, dec_point, thousands_sep ) {
 	// Strip all characters but numerical ones.
 	number = (number + '').replace( /[^0-9+\-Ee.]/g, '' );
-	var n = !isFinite( +number ) ? 0 : +number,
-			prec = !isFinite( +decimals ) ? 0 : Math.abs( decimals ),
+	var n = ! isFinite( + number ) ? 0 : + number,
+			prec = ! isFinite( + decimals ) ? 0 : Math.abs( decimals ),
 			sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
 			dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
 			s = '',
