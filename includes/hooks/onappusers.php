@@ -34,7 +34,8 @@ function hook_onappusers_invoice_paid( $vars ) {
 				AND tblinvoices.`status` = "Paid"
 				AND tblproducts.`servertype` = "onappusers"
 				AND tblinvoiceitems.`type` = "onappusers"
-			GROUP BY tblinvoices.`id`';
+			GROUP BY
+				tblinvoices.`id`';
 	$qry = str_replace( ':invoiceID', $invoice_id, $qry );
 	$result = full_query( $qry );
 
@@ -92,7 +93,8 @@ function hook_onappusers_invoice_paid( $vars ) {
 					AND tblinvoiceitems.`relid` = :serviceID
 				WHERE
 					tblinvoices.`status` = "Unpaid"
-				GROUP BY tblinvoices.`id`';
+				GROUP BY
+					tblinvoices.`id`';
 		$qry = str_replace( ':serviceID', $data[ 'service_id' ], $qry );
 		$result = full_query( $qry );
 
