@@ -45,8 +45,8 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 					LEFT JOIN
 						`tblservergroups` AS grp ON grp.`id` = rel.`groupid`
 					WHERE
-						grp.`id` = ' . $servergroup;
-
+						grp.`id` = :servergroup';
+			$sql = str_replace( ':servergroup', $servergroup, $sql );
 			$res = full_query( $sql );
 			$serversData = array();
 			if( mysql_num_rows( $res ) == 0 ) {
@@ -98,8 +98,14 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				}
 			}
 
-			$sql = 'SELECT prod.`configoption1` AS options, prod.`servergroup` AS `group`'
-					. ' FROM `tblproducts` AS prod WHERE prod.`id` = ' . (int)$_GET[ 'id' ];
+			$sql = 'SELECT
+						prod.`configoption1` AS options,
+						prod.`servergroup` AS `group`
+					FROM
+						`tblproducts` AS prod
+					WHERE
+						prod.`id` = :id';
+			$sql = str_replace( ':id', (int)$_GET[ 'id' ], $sql );
 			$results = full_query( $sql );
 			$results = mysql_fetch_assoc( $results );
 			$results[ 'options' ] = htmlspecialchars_decode( $results[ 'options' ] );
@@ -233,13 +239,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$server_id = $params[ 'serverid' ];
 
 		$query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = $server_id
-            AND client_id = $client_id
-            AND service_id = $serviceid";
+					onapp_user_id
+				FROM
+					tblonappusers
+				WHERE
+					server_id = $server_id
+					AND client_id = $client_id
+					AND service_id = $serviceid";
 
 		$result = full_query( $query );
 		if( $result ) {
@@ -286,13 +292,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$server_id = $params[ 'serverid' ];
 
 		$query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = $server_id
-            AND client_id = $client_id
-            AND service_id = $serviceid";
+					onapp_user_id
+				FROM
+					tblonappusers
+				WHERE
+					server_id = $server_id
+					AND client_id = $client_id
+					AND service_id = $serviceid";
 
 		$result = full_query( $query );
 		if( $result ) {
@@ -329,13 +335,13 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 		$server_id = $params[ 'serverid' ];
 
 		$query = "SELECT
-            onapp_user_id
-        FROM
-            tblonappusers
-        WHERE
-            server_id = '$server_id'
-            AND client_id = '$client_id'
-            AND service_id = '$serviceid'";
+					onapp_user_id
+				FROM
+					tblonappusers
+				WHERE
+					server_id = '$server_id'
+					AND client_id = '$client_id'
+					AND service_id = '$serviceid'";
 
 		$result = full_query( $query );
 		if( $result ) {
@@ -558,8 +564,9 @@ if( ! function_exists( 'onappusers_ConfigOptions' ) ) {
 				FROM
 					`tblonappusers`
 				WHERE
-					`service_id` = ' . $params[ 'serviceid' ] . '
+					`service_id` = :id
 				LIMIT 1';
+		$sql = str_replace( ':id', $params[ 'serviceid' ], $sql );
 		$user = mysql_fetch_assoc( full_query( $sql ) );
 
 		$page  = (int)$_GET[ 'page' ];
