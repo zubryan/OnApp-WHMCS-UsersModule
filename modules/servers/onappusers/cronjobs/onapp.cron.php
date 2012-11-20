@@ -10,7 +10,7 @@ abstract class OnApp_UserModule_Cron {
 
 	public function __construct() {
 		$this->checkCLIMode();
-		$this->root = dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) . DIRECTORY_SEPARATOR;
+		$this->root = dirname( dirname( dirname( dirname( dirname( $_SERVER[ 'SCRIPT_FILENAME' ] ) ) ) ) ) . DIRECTORY_SEPARATOR;
 
 		$this->getRequiredFiles();
 		$this->checkSQL();

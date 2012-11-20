@@ -13,21 +13,26 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		while( $client = mysql_fetch_assoc( $this->clients ) ) {
 			//get last stat retrieving date
 			$qry = 'SELECT
-					MAX( `date` )
-				FROM
-					`onapp_itemized_stat`
-				WHERE
-					`whmcs_user_id` = ' . $client[ 'client_id' ];
+						`Date`
+					FROM
+						`onapp_itemized_last_check`
+					WHERE
+						`WHMCSUserID` = :WHMCSUserID';
+			$qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
 
 			if( isset( $_SERVER[ 'argv' ][ 1 ] ) && $this->validateDate( $_SERVER[ 'argv' ][ 1 ] ) ) {
 				$startDate = $_SERVER[ 'argv' ][ 1 ];
 			}
-			elseif( ! $startDate = mysql_result( mysql_query( $qry ), 0 ) ) {
-				$startDate = gmdate( 'Y-m-01 00:00:00' );
-			}
 			else {
-				$startDate = date( 'Y-m-d H:00:00', strtotime( $startDate ) - ( 2 * 3600 ) );
-				$startDate = substr_replace( $startDate, '00', - 2 );
+				$startDate = mysql_query( $qry );
+				if( ( $startDate === false ) || ( mysql_num_rows( $startDate ) == 0 ) ) {
+					$startDate = gmdate( 'Y-m-01 00:00:00' );
+				}
+				else {
+					$startDate = mysql_result( $startDate, 0 );
+					$startDate = date( 'Y-m-d H:00:00', strtotime( $startDate ) - ( 2 * 3600 ) );
+					$startDate = substr_replace( $startDate, '00', - 2 );
+				}
 			}
 
 			$date = array(
@@ -121,18 +126,20 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 			$cols = implode( '`, `', array_keys( $data ) );
 			$values = implode( '", "', array_values( $data ) );
 			$sql_tmp = 'INSERT INTO `onapp_itemized_resources` ( `' . $cols . '` ) VALUES ( "' . $values . '" )';
-			$sql[] = $sql_tmp;
+			$sql[ ] = $sql_tmp;
 		}
 		return $sql;
 	}
 
 	private function getResourcesData( $client, $date ) {
+		$dateAsArray = $date;
 		$date = http_build_query( $date );
 
 		$url = $this->servers[ $client[ 'server_id' ] ][ 'ipaddress' ] . '/users/' . $client[ 'onapp_user_id' ] . '/user_statistics.json?' . $date;
 		$data = $this->sendRequest( $url, $this->servers[ $client[ 'server_id' ] ][ 'username' ], $this->servers[ $client[ 'server_id' ] ][ 'password' ] );
 
 		if( $data ) {
+			$this->saveLastCheckDate( $client, $dateAsArray );
 			return json_decode( $data );
 		}
 		else {
@@ -170,6 +177,25 @@ class OnApp_UserModule_Cron_Statistic extends OnApp_UserModule_Cron {
 		else {
 			return $data;
 		}
+	}
+
+	private function saveLastCheckDate( $client, $date ) {
+		$qry = 'INSERT INTO
+					`onapp_itemized_last_check`
+				VALUES
+					(
+					:serverID,
+					:WHMCSUserID,
+					:OnAppUserID,
+					""
+					)
+				ON DUPLICATE KEY UPDATE
+					`Date` = ":Date"';
+		$qry = str_replace( ':serverID', $client[ 'server_id' ], $qry );
+		$qry = str_replace( ':WHMCSUserID', $client[ 'client_id' ], $qry );
+		$qry = str_replace( ':OnAppUserID', $client[ 'onapp_user_id' ], $qry );
+		$qry = str_replace( ':Date', $date[ 'period[enddate]' ], $qry );
+		full_query( $qry );
 	}
 
 	private function getAdditionalFiles() {
